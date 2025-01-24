@@ -1,9 +1,11 @@
+require('dotenv').config({ path: './.env' });
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 const router = express.Router();
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Signup endpoint
 router.post('/signup', async (req, res) => {
@@ -57,7 +59,7 @@ router.post("/login", async (req, res) => {
         // Generate a JWT token
         const token = jwt.sign(
             { id: user._id, username: user.username },
-            process.env.JWT_SECRET || "your_secret_key", // Replace with .env secret in production
+            JWT_SECRET,
             { expiresIn: "1h" }
         );
 
@@ -91,7 +93,7 @@ router.post('/guest', (req, res) => {
         // Generate a token
         const token = jwt.sign(
             { id: guestUser.email, role: guestUser.role },
-            process.env.JWT_SECRET || "your_secret_key", // Replace with a secure key
+            JWT_SECRET, // Replace with a secure key
             { expiresIn: "1h" } // Token valid for 1 hour
         );
 
@@ -120,7 +122,7 @@ router.get('/me', async (req, res) => {
     }
 
     try {
-        const secret = process.env.JWT_SECRET || "your_secret_key"; // Ensure a secret is provided
+        const secret = JWT_SECRET; // Ensure a secret is provided
         const decoded = jwt.verify(token, secret); // Verify token
 
         // Handle guest users

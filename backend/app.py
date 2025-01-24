@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from dotenv import load_dotenv
 import os
 import numpy as np
 import cv2
@@ -10,12 +11,20 @@ import base64
 from io import BytesIO
 from flask_cors import CORS
 
+# Load environment variables
+load_dotenv(dotenv_path='./.env')
+
 # Initialize Flask app and enable CORS
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
-# Load the trained model
-model = load_model(r"C:\Users\Vindiya\Desktop\PLANT-EASE\backend\models\cinnamon_model.h5")
+# Load configurations from .env
+DEBUG = os.getenv('FLASK_DEBUG', 'false').lower() == 'true'
+ENV = os.getenv('FLASK_ENV', 'production')
+
+# Load the trained model path from .env
+model_path = os.getenv('MODEL_PATH', 'models/cinnamon_model.h5')
+model = load_model(model_path)
 
 # Load class names
 class_names = ['healthy_cinnamon', 'leaf_spot_disease', 'rough_bark', 'stripe_canker']
